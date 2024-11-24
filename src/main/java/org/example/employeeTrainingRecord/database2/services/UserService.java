@@ -64,6 +64,7 @@ public class UserService {
         }
         Users  user = userRepo.findById(userId).orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.NOT_FOUND, "logId does not exist !!!"));
+        System.out.println(addNewUserDTO);
         user.setName(addNewUserDTO.getName());
         user.setUsername(addNewUserDTO.getUsername());
         user.setPassword(addNewUserDTO.getPassword());

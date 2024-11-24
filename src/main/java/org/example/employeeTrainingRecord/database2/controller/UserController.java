@@ -40,7 +40,7 @@ public class UserController {
     }
     @PutMapping("{userId}")
     public ResponseEntity<?> editUser(@RequestHeader(value = "Authorization", required = false) String token
-            ,@PathVariable String userId , AddNewUserDTO addNewUserDTO){
+            ,@PathVariable String userId ,@RequestBody AddNewUserDTO addNewUserDTO){
         Object editedUser = userService.editUser(token,userId,addNewUserDTO);
         if (editedUser instanceof String){
             return errorResponse(editedUser);
