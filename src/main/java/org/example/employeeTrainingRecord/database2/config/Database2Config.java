@@ -27,7 +27,7 @@ public class Database2Config {
     @Bean(name = "Database2DataSource")
     public DataSource Database2DataSource() {
         return DataSourceBuilder.create()
-                .url("jdbc:mysql://localhost:3306/user")
+                .url("jdbc:mysql://localhost:3306/users")
                 .username("root")
                 .password("mysql@sit")
                 .driverClassName("com.mysql.cj.jdbc.Driver")
