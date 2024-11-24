@@ -1,9 +1,11 @@
 package org.example.employeeTrainingRecord.database1.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.example.employeeTrainingRecord.database1.DTO.AddCourseDTO;
 import org.example.employeeTrainingRecord.database1.DTO.AddTrainingLogDTO;
 import org.example.employeeTrainingRecord.database1.DTO.TrainingLogDTO;
-import org.example.employeeTrainingRecord.database1.entities.TrainingLog;
+import org.example.employeeTrainingRecord.database1.entities.Course;
+import org.example.employeeTrainingRecord.database1.services.CourseService;
 import org.example.employeeTrainingRecord.database1.services.TrainingLogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,76 +17,49 @@ import java.util.List;
 
 @RestController
 @CrossOrigin(origins = {"http://localhost:5173"})
-@RequestMapping("/log")
-public class TrainingLogController {
+@RequestMapping("/course")
+public class CourseController {
 @Autowired
-private TrainingLogService trainingLogService;
+private CourseService courseService;
     @GetMapping()
-    public ResponseEntity<?> getListInvite() {
-        List<TrainingLogDTO> trainingLogs = trainingLogService.getTrainingLogs();
+    public ResponseEntity<?> getCourse() {
+        List<Course> trainingLogs = courseService.getCourse();
         if (trainingLogs != null){
             return ResponseEntity.status(HttpStatus.OK).body(trainingLogs);
         }else{
             return errorResponse("404");
         }
     }
-    @GetMapping("{logId}")
-    public ResponseEntity<?> getLogDetail(@RequestHeader(value = "Authorization", required = false) String token,@PathVariable String logId){
-        Object trainingLogs = trainingLogService.getLogDetail(token,logId);
-        if (trainingLogs instanceof String){
-            return errorResponse(trainingLogs);
-        }
-            return ResponseEntity.status(HttpStatus.OK).body(trainingLogs);
-    }
-    @GetMapping("myLog")
-    public ResponseEntity<?> getMyLog(@RequestHeader(value = "Authorization", required = false) String token){
-        Object trainingLogs = trainingLogService.getMyLogs(token);
-        if (trainingLogs instanceof String){
-            return errorResponse(trainingLogs);
-        }else{
-            return ResponseEntity.status(HttpStatus.OK).body(trainingLogs);
-        }
-    }
     @PostMapping("")
     public ResponseEntity<?> addNewLog(
             @RequestHeader(value = "Authorization", required = false) String token,
-            @RequestPart("trainingLogDTO") String trainingLogDTOString,
-            @RequestPart(value = "file", required = false) MultipartFile file) {
+            @RequestBody AddCourseDTO addCourseDTO){
         try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            AddTrainingLogDTO trainingLogDTO = objectMapper.readValue(trainingLogDTOString, AddTrainingLogDTO.class);
-            if (file != null) {
-                trainingLogDTO.setData(file.getBytes());
+            Object newCourse = courseService.addCourse(token,addCourseDTO);
+            if(newCourse instanceof String){
+                return errorResponse(newCourse);
             }
-            Object newLog = trainingLogService.addLog(token,trainingLogDTO);
-            return ResponseEntity.status(HttpStatus.CREATED).body(newLog);
+            return ResponseEntity.status(HttpStatus.CREATED).body(newCourse);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
         }
     }
-    @PutMapping("{logId}")
+    @PutMapping("{courseId}")
     public ResponseEntity<?> editLog(
-            @RequestHeader(value = "Authorization") String token,
-            @RequestPart("trainingLogDTO") String trainingLogDTOString,
-            @RequestPart(value = "file", required = false) MultipartFile file,
-            @PathVariable String logId) {
+            @RequestHeader(value = "Authorization", required = false) String token,
+            @RequestBody AddCourseDTO addCourseDTO,@PathVariable String courseId){
         try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            AddTrainingLogDTO trainingLogDTO = objectMapper.readValue(trainingLogDTOString, AddTrainingLogDTO.class);
-            if (file != null) {
-                trainingLogDTO.setData(file.getBytes());
-            }
-            Object newLog = trainingLogService.editLog(token,logId,trainingLogDTO);
+            Object newLog = courseService.editCourse(token,courseId,addCourseDTO);
             return ResponseEntity.status(HttpStatus.OK).body(newLog);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
         }
     }
-    @DeleteMapping("{logId}")
+    @DeleteMapping("{courseId}")
     public ResponseEntity<?> deleteLog(@RequestHeader(value = "Authorization", required = false) String token,
-                                       @PathVariable String logId){
+                                       @PathVariable String courseId){
         try {
-            Object deleteLog = trainingLogService.deleteLog(token,logId);
+            Object deleteLog = courseService.deleteCourse(token,courseId);
             if (deleteLog.equals("200")){
                 return ResponseEntity.status(HttpStatus.OK).body("200");
             }

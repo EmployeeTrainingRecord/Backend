@@ -16,7 +16,7 @@ public class TrainingLog {
     @Id
     @Column(name = "recordId",length = 10)
     private String id;
-    @Column(nullable = false, name = "employeeId",length = 120)
+    @Column(nullable = false, name = "employeeId",length = 13)
     private String employeeId;
     @Column(name = "name")
     private String name;
